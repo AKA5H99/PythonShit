@@ -1,0 +1,267 @@
+🔹 SET 1
+1. BFS (Breadth First Search)
+from collections import deque
+
+def bfs(graph, start):
+    visited = set()
+    queue = deque([start])
+
+    while queue:
+        node = queue.popleft()
+        if node not in visited:
+            print(node, end=" ")
+            visited.add(node)
+            for neighbor in graph[node]:
+                if neighbor not in visited:
+                    queue.append(neighbor)
+
+graph = {
+    'A': ['B', 'C'],
+    'B': ['D', 'E'],
+    'C': ['F'],
+    'D': [],
+    'E': ['F'],
+    'F': []
+}
+
+print("BFS Traversal:")
+bfs(graph, 'A')
+
+
+
+2. DFS (Depth First Search)
+def dfs(graph, node, visited=None):
+    if visited is None:
+        visited = set()
+
+    if node not in visited:
+        print(node, end=" ")
+        visited.add(node)
+        for neighbor in graph[node]:
+            dfs(graph, neighbor, visited)
+
+graph = {
+    'A': ['B', 'C'],
+    'B': ['D', 'E'],
+    'C': ['F'],
+    'D': [],
+    'E': ['F'],
+    'F': []
+}
+
+print("\nDFS Traversal:")
+dfs(graph, 'A')
+
+
+
+3. Tower of Hanoi
+def tower_of_hanoi(n, source, target, auxiliary):
+    if n == 1:
+        print(f"Move disk 1 from {source} to {target}")
+        return
+    tower_of_hanoi(n - 1, source, auxiliary, target)
+    print(f"Move disk {n} from {source} to {target}")
+    tower_of_hanoi(n - 1, auxiliary, target, source)
+
+n = int(input("Enter number of disks: "))
+tower_of_hanoi(n, 'A', 'C', 'B')
+
+
+
+4. Association Law
+
+Association law: (A + (B + C)) = ((A + B) + C)
+
+We’ll check with user inputs.
+
+a = int(input("Enter value of A (0 or 1): "))
+b = int(input("Enter value of B (0 or 1): "))
+c = int(input("Enter value of C (0 or 1): "))
+
+lhs = a or (b or c)
+rhs = (a or b) or c
+
+print("Association Law Check: (A + (B + C)) = ((A + B) + C)")
+print(f"LHS = {lhs}, RHS = {rhs}")
+print("Law holds:", lhs == rhs)
+
+
+
+5. Distributive Law
+
+Distributive law: A * (B + C) = (A*B + A*C)
+
+a = int(input("Enter value of A (0 or 1): "))
+b = int(input("Enter value of B (0 or 1): "))
+c = int(input("Enter value of C (0 or 1): "))
+
+lhs = a and (b or c)
+rhs = (a and b) or (a and c)
+
+print("Distributive Law Check: A*(B + C) = (A*B + A*C)")
+print(f"LHS = {lhs}, RHS = {rhs}")
+print("Law holds:", lhs == rhs)
+
+
+
+🔹 SET 2
+1. Travelling Salesman Problem (TSP) – Brute Force
+from itertools import permutations
+
+def travelling_salesman(graph, start):
+    vertices = list(graph.keys())
+    vertices.remove(start)
+    min_path = float("inf")
+    best_route = None
+
+    for perm in permutations(vertices):
+        current_cost = 0
+        k = start
+        for j in perm:
+            current_cost += graph[k][j]
+            k = j
+        current_cost += graph[k][start]
+
+        if current_cost < min_path:
+            min_path = current_cost
+            best_route = (start,) + perm + (start,)
+
+    print("Best Route:", best_route)
+    print("Minimum Cost:", min_path)
+
+graph = {
+    0: {0: 0, 1: 10, 2: 15, 3: 20},
+    1: {0: 10, 1: 0, 2: 35, 3: 25},
+    2: {0: 15, 1: 35, 2: 0, 3: 30},
+    3: {0: 20, 1: 25, 2: 30, 3: 0}
+}
+
+travelling_salesman(graph, 0)
+
+
+
+
+2. Missionaries and Cannibals Problem
+from collections import deque
+
+def is_valid(state):
+    m_left, c_left, m_right, c_right, _ = state
+    if m_left < 0 or c_left < 0 or m_right < 0 or c_right < 0:
+        return False
+    if (m_left > 0 and m_left < c_left) or (m_right > 0 and m_right < c_right):
+        return False
+    return True
+
+def missionaries_cannibals():
+    start = (3, 3, 0, 0, 'left')
+    goal = (0, 0, 3, 3, 'right')
+    queue = deque([(start, [])])
+    visited = set()
+
+    while queue:
+        state, path = queue.popleft()
+        if state in visited:
+            continue
+        visited.add(state)
+        path = path + [state]
+
+        if state == goal:
+            return path
+
+        m_left, c_left, m_right, c_right, boat = state
+        if boat == 'left':
+            moves = [(1, 0), (2, 0), (0, 1), (0, 2), (1, 1)]
+            for m, c in moves:
+                new_state = (m_left - m, c_left - c, m_right + m, c_right + c, 'right')
+                if is_valid(new_state):
+                    queue.append((new_state, path))
+        else:
+            moves = [(1, 0), (2, 0), (0, 1), (0, 2), (1, 1)]
+            for m, c in moves:
+                new_state = (m_left + m, c_left + c, m_right - m, c_right - c, 'left')
+                if is_valid(new_state):
+                    queue.append((new_state, path))
+
+solution = missionaries_cannibals()
+print("Solution Path:")
+for step in solution:
+    print(step)
+
+
+
+
+3. Water Jug Problem
+def water_jug(x, y, target):
+    visited = set()
+    queue = [(0, 0)]
+
+    while queue:
+        a, b = queue.pop(0)
+
+        if (a, b) in visited:
+            continue
+        visited.add((a, b))
+
+        print(a, b)
+
+        if a == target or b == target:
+            print("Reached target!")
+            return
+
+        # Possible states
+        states = [
+            (x, b),  # Fill jug1
+            (a, y),  # Fill jug2
+            (0, b),  # Empty jug1
+            (a, 0),  # Empty jug2
+            (a - min(a, y - b), b + min(a, y - b)),  # Pour jug1 → jug2
+            (a + min(b, x - a), b - min(b, x - a))   # Pour jug2 → jug1
+        ]
+
+        for state in states:
+            if state not in visited:
+                queue.append(state)
+
+water_jug(4, 3, 2)
+
+
+
+
+4. Hill Climbing Algorithm
+import random
+
+def hill_climbing(objective_function, max_iterations=1000):
+    current = random.uniform(-10, 10)
+    for _ in range(max_iterations):
+        neighbor = current + random.uniform(-1, 1)
+        if objective_function(neighbor) > objective_function(current):
+            current = neighbor
+    return current
+
+# Example: maximize f(x) = -(x^2) + 10
+f = lambda x: -(x**2) + 10
+solution = hill_climbing(f)
+print("Best solution found:", solution)
+print("Value:", f(solution))
+
+
+
+
+5. 4-Queens Problem
+def is_safe(board, row, col):
+    for i in range(col):
+        if board[i] == row or abs(board[i] - row) == abs(i - col):
+            return False
+    return True
+
+def solve_nqueens(n, board=[], col=0):
+    if col == n:
+        print(board)
+        return True
+    for row in range(n):
+        if is_safe(board, row, col):
+            if solve_nqueens(n, board + [row], col + 1):
+                return True
+    return False
+
+solve_nqueens(4)
